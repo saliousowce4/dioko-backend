@@ -23,19 +23,24 @@ RUN a2enmod rewrite
 # Set the working directory
 WORKDIR /var/www/html
 
-# --- START OF FIX ---
-
-# 1. Copy ALL application files first
+# Copy all application files
 COPY . .
 
-# 2. Now run composer install (the 'artisan' file will be present)
+# Run composer install
 RUN composer install --no-interaction --optimize-autoloader --no-dev
-
-# --- END OF FIX ---
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# --- START OF FIX ---
+# Copy the startup script into the container and make it executable
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
 # Expose port 80
 EXPOSE 80
+
+# Set the entrypoint to our new script
+ENTRYPOINT ["start.sh"]
+# --- END OF FIX ---
