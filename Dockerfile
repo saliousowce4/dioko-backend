@@ -30,8 +30,10 @@ COPY . .
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # Fix permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && touch /var/www/html/storage/logs/laravel.log \
+    && chown www-data:www-data /var/www/html/storage/logs/laravel.log
 
 # --- START OF FIX ---
 # Copy the startup script into the container and make it executable
